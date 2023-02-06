@@ -72,7 +72,7 @@
 
 ## Base de datos
 
-* La base de datos se encuentra en la carpeta base_datos para ser importada 
+* La base de datos se encuentra en la carpeta base_datos para ser importada, para hacer uso de esta debe de conectarse a un motor de base de datos mysql y importarla.
 
 ## Modelo entidad relación
 # ![Naves espaciales](docs/der.png "Logo Title Text 1")
