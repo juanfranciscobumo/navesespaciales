@@ -33,7 +33,7 @@
 ## CURL get tipos de nave
 
 * curl --request GET \
---url 'http://localhost:8080/tipos/get?tipo=Naves%20lanzadera'
+  --url http://localhost:8080/tipos/get
 
 ## CURL get naves 
 

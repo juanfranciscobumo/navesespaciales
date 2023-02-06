@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity // Esto le dice a Hibernate que haga una tabla con esta clase
 @Table(name = "tipodenave")
 public class TipoDeNave {
-    @Id // crea este campo como el id de la tabla
+    @Id // crea este campo como clave primaria
     @GeneratedValue(strategy= GenerationType.AUTO) // crea un elemento auntoincremental
     private Integer id;
     private String descripcion;

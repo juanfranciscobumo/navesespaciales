@@ -3,7 +3,7 @@ package co.com.sofka.navesespaciales.models;
 public class CopiaCrearNaveEspacial {
     private Integer id;
     private String combustible;
-    private double empuje;
+    private Integer empuje;
     private Integer capacidadTransporte;
     private String nombre;
 
@@ -25,11 +25,11 @@ public class CopiaCrearNaveEspacial {
         this.combustible = combustible;
     }
 
-    public double getEmpuje() {
+    public Integer getEmpuje() {
         return empuje;
     }
 
-    public void setEmpuje(double empuje) {
+    public void setEmpuje(Integer empuje) {
         this.empuje = empuje;
     }
 

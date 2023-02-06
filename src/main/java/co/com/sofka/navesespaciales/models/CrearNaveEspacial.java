@@ -11,7 +11,7 @@ public class CrearNaveEspacial {
     @GeneratedValue(strategy= GenerationType.AUTO) // crea un elemento auntoincremental
     private Integer id;
     private String combustible;
-    private double empuje;
+    private Integer empuje;
     private Integer capacidadTransporte;
     private String nombre;
     private Integer tipoNave;
@@ -32,11 +32,11 @@ public class CrearNaveEspacial {
         this.combustible = combustible;
     }
 
-    public double getEmpuje() {
+    public Integer getEmpuje() {
         return empuje;
     }
 
-    public void setEmpuje(double empuje) {
+    public void setEmpuje(Integer empuje) {
         this.empuje = empuje;
     }
 

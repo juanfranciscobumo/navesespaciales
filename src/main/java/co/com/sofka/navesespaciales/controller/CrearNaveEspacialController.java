@@ -22,59 +22,93 @@ public class CrearNaveEspacialController {
 
     @Autowired
     private TipoDeNaveRepository tipoDeNaveRepository;
-   private CopiaCrearNaveEspacial copiaCrearNaveEspacial;
+    private CopiaCrearNaveEspacial copiaCrearNaveEspacial;
 
     private Optional<TipoDeNave> tipoDeNaves;
-    @PostMapping(path = "/add") // servicio crear nave
-    public @ResponseBody String crearNave(@RequestParam String combustible, double empuje, int capacidadTransporte, String nombre) {
+    private CrearNaveEspacial crearNaveEspacial;
+    public static String NAVES_NO_TRIPULADAS_O_ROBOTICAS="Naves no tripuladas o roboticas";
+    public static String NAVES_TRIPULADAS="Naves tripuladas";
+    public static String NAVES_LANZADERA="Naves lanzadera";
 
-        CrearNaveEspacial crearNaveEspacial = new CrearNaveEspacial();
-        crearNaveEspacialRepository.save(crearNaveEspacial);
+    @PostMapping(path = "/add") // servicio crear nave9
+    public @ResponseBody String crearNave(@RequestParam String combustible, int empuje, int capacidadTransporte, String nombre) {
+
+        crearNaveEspacial = new CrearNaveEspacial();
         // if para determinar el tipo de nave
-        if ((combustible.equals("") && capacidadTransporte == 0) || (combustible.equals(""))) {
-            List<TipoDeNave> tipoDeNaves = tipoDeNaveRepository.findByDescripcion("Naves no tripuladas o roboticas");
-            crearNaveEspacial.setTipoNave(tipoDeNaves.get(0).getId());
-            crearNaveEspacial.setCombustible("Sin combustible");
-            crearNaveEspacial.setEmpuje(empuje);
-            crearNaveEspacial.setCapacidadTransporte(capacidadTransporte);
-            crearNaveEspacial.setNombre(nombre);
-            crearNaveEspacialRepository.save(crearNaveEspacial);
-            return "El tipo de nave es "+tipoDeNaves.get(0).getDescripcion();
-        } else if (capacidadTransporte > 0) {
-            List<TipoDeNave> tipoDeNaves = tipoDeNaveRepository.findByDescripcion("Naves tripuladas");
-            crearNaveEspacial.setTipoNave(tipoDeNaves.get(0).getId());
-            crearNaveEspacial.setCombustible(combustible);
-            crearNaveEspacial.setEmpuje(empuje);
-            crearNaveEspacial.setCapacidadTransporte(capacidadTransporte);
-            crearNaveEspacial.setNombre(nombre);
-            crearNaveEspacialRepository.save(crearNaveEspacial);
-            return "El tipo de nave es "+tipoDeNaves.get(0).getDescripcion();
+        if (navesNoTripuladasORoboticas(combustible, capacidadTransporte)) {
+            crearNaveEspacialRepository
+                    .save(llenarObjetoCrearNaveEspacial(
+                            buscarElIdSegunLaDescripcion(NAVES_NO_TRIPULADAS_O_ROBOTICAS),
+                            "Sin combustible", empuje, capacidadTransporte, nombre));
+
+            return "El tipo de nave es " + buscarLaDescripcionPorElId(buscarElIdSegunLaDescripcion(
+                    NAVES_NO_TRIPULADAS_O_ROBOTICAS));
+
+        } else if (navesTripuladas(capacidadTransporte)) {
+            crearNaveEspacialRepository
+                    .save(llenarObjetoCrearNaveEspacial(
+                            buscarElIdSegunLaDescripcion(NAVES_TRIPULADAS),
+                            combustible, empuje, capacidadTransporte, nombre));
+
+            return "El tipo de nave es " + buscarLaDescripcionPorElId(buscarElIdSegunLaDescripcion(NAVES_TRIPULADAS));
+
         } else {
-            List<TipoDeNave> tipoDeNaves = tipoDeNaveRepository.findByDescripcion("Naves lanzadera");
-            crearNaveEspacial.setTipoNave(tipoDeNaves.get(0).getId());
-            crearNaveEspacial.setCombustible(combustible);
-            crearNaveEspacial.setEmpuje(empuje);
-            crearNaveEspacial.setCapacidadTransporte(capacidadTransporte);
-            crearNaveEspacial.setNombre(nombre);
-            crearNaveEspacialRepository.save(crearNaveEspacial);
-            return "El tipo de nave es "+tipoDeNaves.get(0).getDescripcion();
+            crearNaveEspacialRepository
+                    .save(llenarObjetoCrearNaveEspacial(
+                            buscarElIdSegunLaDescripcion(NAVES_LANZADERA),
+                            combustible, empuje, capacidadTransporte, nombre));
+
+            return "El tipo de nave es " + buscarLaDescripcionPorElId(buscarElIdSegunLaDescripcion(NAVES_LANZADERA));
         }
     }
 
     @GetMapping(path = "/get") // servicio para mostrar las naves creadas
     public @ResponseBody List<CopiaCrearNaveEspacial> getCrearNave() {
-         List<CopiaCrearNaveEspacial> copiaCrearNaveEspacialList = new ArrayList<>();
+        List<CopiaCrearNaveEspacial> copiaCrearNaveEspacialList = new ArrayList<>();
 
-        crearNaveEspacialRepository.findAll().forEach(a-> {
-            copiaCrearNaveEspacial = new CopiaCrearNaveEspacial();
-            tipoDeNaves = tipoDeNaveRepository.findById(a.getTipoNave());
-            copiaCrearNaveEspacial.setTipoNave(tipoDeNaves.get().getDescripcion());
-            copiaCrearNaveEspacial.setCombustible(a.getCombustible());
-            copiaCrearNaveEspacial.setNombre(a.getNombre());
-            copiaCrearNaveEspacial.setId(a.getId());
-            copiaCrearNaveEspacial.setCapacidadTransporte(a.getCapacidadTransporte());
-            copiaCrearNaveEspacialList.add(copiaCrearNaveEspacial);
-        } );
+        crearNaveEspacialRepository.findAll().forEach(a -> {
+            copiaCrearNaveEspacialList.add(crearCopiaNaveEspacial(a.getId(),buscarLaDescripcionPorElId(a.getTipoNave()),
+                    a.getCombustible(), a.getEmpuje(), a.getCapacidadTransporte(), a.getNombre()));
+        });
         return copiaCrearNaveEspacialList;
     }
+    // Método buscar la descripción según el id
+    public String buscarLaDescripcionPorElId(int id) {
+        tipoDeNaves = tipoDeNaveRepository.findById(id);
+        return tipoDeNaves.get().getDescripcion();
+    }
+    // Método buscar el id según la descripción
+    public Integer buscarElIdSegunLaDescripcion(String descripcion) {
+        List<TipoDeNave> tipoDeNaves = tipoDeNaveRepository.findByDescripcion(descripcion);
+        return tipoDeNaves.get(0).getId();
+    }
+    // Método para determinar si el tipo de nave es de tipo naves no tripuladas o robóticas
+    public boolean navesNoTripuladasORoboticas(String combustible, int capacidadTransporte) {
+        return (combustible.equals("") && capacidadTransporte == 0) || (combustible.equals(""));
+    }
+    // Método para revisar si la capacidad de pasajeros es mayor a 0
+    public boolean navesTripuladas(int capacidadTransporte) {
+        return capacidadTransporte > 0;
+    }
+    // Método para llenar la tabla crear nave espacial
+    public CrearNaveEspacial llenarObjetoCrearNaveEspacial(int tipo, String combustible, int empuje, int capacidadTransporte, String nombre) {
+        crearNaveEspacial.setTipoNave(tipo);
+        crearNaveEspacial.setCombustible(combustible);
+        crearNaveEspacial.setEmpuje(empuje);
+        crearNaveEspacial.setCapacidadTransporte(capacidadTransporte);
+        crearNaveEspacial.setNombre(nombre);
+        return crearNaveEspacial;
+    }
+    // Método para crear una copia de la tabla crear nave espacial
+    public CopiaCrearNaveEspacial crearCopiaNaveEspacial(int id,String tipo, String combustible, int empuje, int capacidadTransporte, String nombre) {
+        copiaCrearNaveEspacial = new CopiaCrearNaveEspacial();
+        copiaCrearNaveEspacial.setTipoNave(tipo);
+        copiaCrearNaveEspacial.setCombustible(combustible);
+        copiaCrearNaveEspacial.setNombre(nombre);
+        copiaCrearNaveEspacial.setId(id);
+        copiaCrearNaveEspacial.setEmpuje(empuje);
+        copiaCrearNaveEspacial.setCapacidadTransporte(capacidadTransporte);
+        return copiaCrearNaveEspacial;
+    }
 }
+
