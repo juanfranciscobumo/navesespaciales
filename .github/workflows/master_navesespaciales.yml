@@ -21,7 +21,7 @@ jobs:
         with:
           java-version: '8'
 
-      - name: Build with Maven
+      - name: Build with Gradle
         run: gradle build
 
       - name: Upload artifact for deployment job
