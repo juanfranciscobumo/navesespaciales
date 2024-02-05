@@ -9,6 +9,7 @@ on:
 jobs:
   setup-database:
     runs-on: ubuntu-latest
+    
     permissions:
       contents: write
 
@@ -30,7 +31,7 @@ jobs:
 
       # Load SQL script into the database
       - name: Load SQL script
-        run: mysql -u root -p root < base_datos/navesespaciales.sql
+        run: mysql -uroot -proot < base_datos/navesespaciales.sql
 
   build:
     needs: setup-database
