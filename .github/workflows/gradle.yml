@@ -31,7 +31,7 @@ jobs:
 
       # Load SQL script into the database
       - name: Load SQL script
-        run: mysql -u root -p < base_datos/navesespaciales.sql
+        run: mysql -u root -p
 
   build:
     needs: setup-database
