@@ -31,7 +31,7 @@ jobs:
 
       # Load SQL script into the database
       - name: Load SQL script
-        run: mysql -u root -p
+        run: mysql -u root -p root
 
   build:
     needs: setup-database
