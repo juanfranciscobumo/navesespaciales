@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  spring-app:
+    image: openjdk:11-jre-slim
+    command: ["java", "-jar", "/app/app.jar"]
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./build/libs/navesespaciales-0.0.1-SNAPSHOT.jar:/app/app.jar
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: navesespaciales
+    ports:
+      - "9001:3306"
+    volumes:
+      - ./datos_mysql:/var/lib/mysql
+      - ./base_datos/navesespaciales.sql:/docker-entrypoint-initdb.d/init.sql

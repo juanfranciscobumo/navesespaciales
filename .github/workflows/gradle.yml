@@ -1,35 +1,24 @@
-name: Tests
+name: Docker Compose Deployment
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
-    services:
-      mariadb:
-        image: mariadb:latest
-        ports:
-          - 3306
-        env:
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
-          MYSQL_DATABASE: test
-          MYSQL_ROOT_PASSWORD: root
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - name: Verify MariaDB connection
-        env:
-          PORT: ${{ job.services.mariadb.ports[3306] }}
+      - name: Set up Docker Compose
         run: |
-          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
-            sleep 1
-          done          
+          sudo rm /usr/local/bin/docker-compose
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
 
-      - name: Test
-        run: |
-          your tests
- 
+      - name: Build and Run Docker Compose
+        run: docker-compose up -d
+        working-directory: docker-compose.yml
